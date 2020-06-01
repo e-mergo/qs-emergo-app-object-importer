@@ -1,0 +1,7 @@
+<button class="add-button lui-fade-button" ng-class="{ adding: item.adding, added: item.added, failed: item.failed }" ng-disabled="item.disabled" qva-activate="add(item)" tid="add-{{type}}" ng-attr-title="{{title(item)}}">
+	<span ng-if="item.adding" class="qv-loader"></span>
+	<span ng-if="item.added" class="lui-fade-button__icon lui-icon lui-icon--tick"></span>
+	<span ng-if="item.failed" class="lui-fade-button__icon lui-icon lui-icon--close"></span>
+	<span ng-if="item.exists" class="lui-fade-button__icon lui-icon lui-icon--info"></span>
+	<span ng-if="canAdd(item)" class="lui-button__text add-button-text">Add</span>
+</button>
