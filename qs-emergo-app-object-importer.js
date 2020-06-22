@@ -39,7 +39,7 @@ define([
 ], function( qlik, qvangular, _, $q, translator, qUtil, Resize, props, initProps, util, uiUtil, css, tmpl, modalTmpl ) {
 
 	// Add global styles to the page
-	util.registerStyle("emergo-app-object-importer", css);
+	util.registerStyle("qs-emergo-app-object-importer", css);
 
 	/**
 	 * Holds the objects of the current app

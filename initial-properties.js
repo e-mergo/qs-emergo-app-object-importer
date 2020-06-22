@@ -7,7 +7,7 @@
  * @return {Object}               Initial properties
  */
 define([
-	"text!./emergo-app-object-importer.qext"
+	"text!./qs-emergo-app-object-importer.qext"
 ], function( qext ) {
 	return {
 		showTitles: false,

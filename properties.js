@@ -7,7 +7,7 @@
  */
 define([
 	"./util/util",
-	"text!./emergo-app-object-importer.qext"
+	"text!./qs-emergo-app-object-importer.qext"
 ], function( util, qext ) {
 
 	/**
@@ -40,7 +40,7 @@ define([
 				component: "button",
 				action: function() {
 					util.requireMarkdownMimetype().finally( function() {
-						window.open(window.requirejs.toUrl("extensions/emergo-app-object-importer/docs/docs.html"), "_blank");
+						window.open(window.requirejs.toUrl("extensions/qs-emergo-app-object-importer/docs/docs.html"), "_blank");
 					});
 				}
 			}

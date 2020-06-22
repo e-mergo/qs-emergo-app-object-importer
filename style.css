@@ -4,26 +4,26 @@
  * @package E-mergo Tools Bundle
  */
 
-.qv-client.qv-card #qv-stage-container #grid .qv-object-emergo-app-object-importer .qv-inner-object {
+.qv-client.qv-card #qv-stage-container #grid .qv-object-qs-emergo-app-object-importer .qv-inner-object {
 	padding: 0;
 }
 
-.qv-client.qv-card #qv-stage-container #grid .qv-object-emergo-app-object-importer .qv-inner-object .qv-object-header.thin,
-.qv-object-emergo-app-object-importer .qv-inner-object .qv-object-header.thin {
+.qv-client.qv-card #qv-stage-container #grid .qv-object-qs-emergo-app-object-importer .qv-inner-object .qv-object-header.thin,
+.qv-object-qs-emergo-app-object-importer .qv-inner-object .qv-object-header.thin {
 	height: 0;
 }
 
-.emergo-app-object-importer .open-edit-mode {
+.qs-emergo-app-object-importer .open-edit-mode {
 	margin-left: 5px;
 	padding: 0px 10px;
 	background: #fff;
 }
 
-.emergo-app-object-importer .open-edit-mode:active {
+.qs-emergo-app-object-importer .open-edit-mode:active {
 	background: rgb(89,89,89);
 }
 
-.emergo-app-object-importer .open-button {
+.qs-emergo-app-object-importer .open-button {
 	height: 32px;
 	width: 250px;
 	white-space: nowrap;
@@ -33,129 +33,129 @@
 	position: relative;
 }
 
-.qv-layout-xsmall .emergo-app-object-importer .open-button {
+.qv-layout-xsmall .qs-emergo-app-object-importer .open-button {
 	height: 28px;
 	width: 150px;
 }
 
-#emergo-app-object-importer-modal .modal-content {
+#qs-emergo-app-object-importer-modal .modal-content {
 	height: 400px;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
-#emergo-app-object-importer-modal .modal-content.loading {
+#qs-emergo-app-object-importer-modal .modal-content.loading {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-#emergo-app-object-importer-modal .modal-loading-container {
+#qs-emergo-app-object-importer-modal .modal-loading-container {
 	text-align: center;
 }
 
-#emergo-app-object-importer-modal .modal-loader {
+#qs-emergo-app-object-importer-modal .modal-loader {
 	height: 38px;
 	width: 38px;
 	display: inline-block;
 }
 
-#emergo-app-object-importer-modal .notice {
+#qs-emergo-app-object-importer-modal .notice {
 	padding: 10px;
 	margin-bottom: 15px;
 	color: #fff;
 	background: rgba(63,138,179,.6)
 }
 
-#emergo-app-object-importer-modal .notice .lui-icon {
+#qs-emergo-app-object-importer-modal .notice .lui-icon {
 	margin-right: 5px;
 }
 
-#emergo-app-object-importer-modal .content-section + .content-section {
+#qs-emergo-app-object-importer-modal .content-section + .content-section {
 	margin-top: 15px;
 	padding-top: 15px;
 	border-top: 1px solid #d9d9d9;
 }
 
-#emergo-app-object-importer-modal .inline-title {
+#qs-emergo-app-object-importer-modal .inline-title {
 	display: flex;
 	height: 28px;
 	cursor: pointer;
 }
 
-#emergo-app-object-importer-modal .inline-title .title-text {
+#qs-emergo-app-object-importer-modal .inline-title .title-text {
 	flex: 1 1 auto;
 	align-self: center;
 }
 
-#emergo-app-object-importer-modal .inline-title .lui-button {
+#qs-emergo-app-object-importer-modal .inline-title .lui-button {
 	flex: 0 0 auto;
 	align-self: center;
 	padding: 0 10px;
 }
 
-#emergo-app-object-importer-modal .content-section .inline-title .lui-icon:before {
+#qs-emergo-app-object-importer-modal .content-section .inline-title .lui-icon:before {
 	content: "triangle_top";
 }
 
-#emergo-app-object-importer-modal .content-section.toggled .inline-title .lui-icon:before {
+#qs-emergo-app-object-importer-modal .content-section.toggled .inline-title .lui-icon:before {
 	content: "triangle_bottom";
 }
 
-#emergo-app-object-importer-modal .content-section.toggled h2 ~ * {
+#qs-emergo-app-object-importer-modal .content-section.toggled h2 ~ * {
 	display: none;
 }
 
-#emergo-app-object-importer-modal .content-section .section-settings {
+#qs-emergo-app-object-importer-modal .content-section .section-settings {
 	margin-bottom: 15px;
 	padding: 0 10px;
 }
 
-#emergo-app-object-importer-modal .content-section .section-settings .lui-checkbox__check-text {
+#qs-emergo-app-object-importer-modal .content-section .section-settings .lui-checkbox__check-text {
 	padding-left: 8px;
 }
 
-#emergo-app-object-importer-modal .lui-list .has-details .lui-list__item {
+#qs-emergo-app-object-importer-modal .lui-list .has-details .lui-list__item {
 	cursor: pointer;
 }
 
-#emergo-app-object-importer-modal .lui-list .exists .lui-list__text,
-#emergo-app-object-importer-modal .lui-list .disabled .lui-list__text {
+#qs-emergo-app-object-importer-modal .lui-list .exists .lui-list__text,
+#qs-emergo-app-object-importer-modal .lui-list .disabled .lui-list__text {
 	color: rgba(89,89,89,.5);
 }
 
-#emergo-app-object-importer-modal .lui-list li:last-child .lui-list__item {
+#qs-emergo-app-object-importer-modal .lui-list li:last-child .lui-list__item {
 	border-bottom: 0px;
 }
 
-#emergo-app-object-importer-modal .item-details {
+#qs-emergo-app-object-importer-modal .item-details {
 	background: rgba(0,0,0,.1);
 	padding: 10px;
 }
 
-#emergo-app-object-importer-modal .item-details .item-detail {
+#qs-emergo-app-object-importer-modal .item-details .item-detail {
 	display: grid;
 	grid-template-columns: 100px auto;
 }
 
-#emergo-app-object-importer-modal .item-details .item-detail + .item-detail {
+#qs-emergo-app-object-importer-modal .item-details .item-detail + .item-detail {
 	margin-top: 10px;
 }
 
-#emergo-app-object-importer-modal .item-details .item-detail dt {
+#qs-emergo-app-object-importer-modal .item-details .item-detail dt {
 	font-weight: 700;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-#emergo-app-object-importer-modal .item-details .item-detail .item-description + dd {
+#qs-emergo-app-object-importer-modal .item-details .item-detail .item-description + dd {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-#emergo-app-object-importer-modal .item-details .item-detail .item-definition + dd {
+#qs-emergo-app-object-importer-modal .item-details .item-detail .item-definition + dd {
 	font-family: Courier, monospace;
 	font-weight: 400;
 	word-wrap: break-word;
@@ -164,16 +164,16 @@
 	text-overflow: ellipsis;
 }
 
-#emergo-app-object-importer-modal .add-button {
+#qs-emergo-app-object-importer-modal .add-button {
 	height: 36px;
 	padding: 0 10px;
 }
 
-#emergo-app-object-importer-modal .add-button .lui-icon {
+#qs-emergo-app-object-importer-modal .add-button .lui-icon {
 	margin: 0 5px;
 }
 
-#emergo-app-object-importer-modal .add-button .qv-loader {
+#qs-emergo-app-object-importer-modal .add-button .qv-loader {
 	height: 14px;
 	width: 14px;
 	margin: 0 5px;

@@ -11,7 +11,7 @@ define([
 ], function( qvangular, noticeTmpl, sectionListTmpl, addButtonTmpl ) {
 
 	// Notice
-	qvangular.directive("emergoAppObjectImporterNotice", function() {
+	qvangular.directive("qsEmergoAppObjectImporterNotice", function() {
 		return {
 			template: noticeTmpl,
 			replace: true,
@@ -31,7 +31,7 @@ define([
 	});
 
 	// Section List
-	qvangular.directive("emergoAppObjectImporterSectionList", function() {
+	qvangular.directive("qsEmergoAppObjectImporterSectionList", function() {
 		return {
 			template: sectionListTmpl,
 			replace: true,
@@ -56,7 +56,7 @@ define([
 	});
 
 	// Add button
-	qvangular.directive("emergoAppObjectImporterAddButton", function() {
+	qvangular.directive("qsEmergoAppObjectImporterAddButton", function() {
 		return {
 			template: addButtonTmpl,
 			replace: true,

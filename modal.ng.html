@@ -1,4 +1,4 @@
-<lui-dialog id="emergo-app-object-importer-modal" x-variant="{{::variant}}" class="qv-confirm-dialog">
+<lui-dialog id="qs-emergo-app-object-importer-modal" x-variant="{{::variant}}" class="qv-confirm-dialog">
 	<lui-dialog-header ng-if="input.title">
 		<lui-dialog-title>{{input.title}}</lui-dialog-title>
 	</lui-dialog-header>
@@ -7,7 +7,7 @@
 			<div class="qv-loader modal-loader"></div>
 		</div>
 		<div class="content" ng-if="!loading">
-			<emergo-app-object-importer-notice ng-if="!nothingFound">Items marked with this symbol already exist inside the current app.</emergo-app-object-importer-notice>
+			<qs-emergo-app-object-importer-notice ng-if="!nothingFound">Items marked with this symbol already exist inside the current app.</qs-emergo-app-object-importer-notice>
 
 			<!-- Sheets -->
 			<div class="content-section app-sheets" ng-if="sheets.length" ng-class="{ toggled: !show.sheets }">
@@ -26,11 +26,11 @@
 					</label>
 				</div>
  -->
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="sheet"
 					items="sheets"
 					add="addSheet"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Dimensions -->
@@ -40,13 +40,13 @@
 					<button class="lui-button" ng-disabled="!show.dimensions" qva-activate="addAllItems('dimensions')">Add all dimensions</button>
 				</h2>
 
-				<emergo-app-object-importer-notice>Dimensions will be imported with their original object id. This helps keep linked objects connected in the current app.</emergo-app-object-importer-notice>
+				<qs-emergo-app-object-importer-notice>Dimensions will be imported with their original object id. This helps keep linked objects connected in the current app.</qs-emergo-app-object-importer-notice>
 
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="dimension"
 					items="dimensions"
 					add="addDimension"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Measures -->
@@ -56,13 +56,13 @@
 					<button class="lui-button" ng-disabled="!show.measures" qva-activate="addAllItems('measures')">Add all measures</button>
 				</h2>
 
-				<emergo-app-object-importer-notice>Measures will be imported with their original object id. This helps keep linked objects connected in the current app.</emergo-app-object-importer-notice>
+				<qs-emergo-app-object-importer-notice>Measures will be imported with their original object id. This helps keep linked objects connected in the current app.</qs-emergo-app-object-importer-notice>
 
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="measure"
 					items="measures"
 					add="addMeasure"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Visualizations (master objects) -->
@@ -72,13 +72,13 @@
 					<button class="lui-button" ng-disabled="!show.masterObjects" qva-activate="addAllItems('masterObjects')">Add all visualizations</button>
 				</h2>
 
-				<emergo-app-object-importer-notice>Visualizations (master objects) will be imported with their original object id. This helps keep linked objects connected in the current app.</emergo-app-object-importer-notice>
+				<qs-emergo-app-object-importer-notice>Visualizations (master objects) will be imported with their original object id. This helps keep linked objects connected in the current app.</qs-emergo-app-object-importer-notice>
 
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="masterobject"
 					items="masterObjects"
 					add="addMasterObject"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Alternate States -->
@@ -88,11 +88,11 @@
 					<button class="lui-button" ng-disabled="!show.alternateStates" qva-activate="addAllItems('alternateStates')">Add all alternate states</button>
 				</h2>
 
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="alternate-state"
 					items="alternateStates"
 					add="addAlternateState"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Variables -->
@@ -102,11 +102,11 @@
 					<button class="lui-button" ng-disabled="!show.variables" qva-activate="addAllItems('variables')">Add all variables</button>
 				</h2>
 
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="variable"
 					items="variables"
 					add="addVariable"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Bookmarks -->
@@ -116,7 +116,7 @@
 					<button class="lui-button" ng-disabled="!show.bookmarks" qva-activate="addAllItems('bookmarks')">Add all bookmarks</button>
 				</h2>
 
-				<emergo-app-object-importer-notice icon="bookmark">Imported bookmarks will be associated with the current sheet. Selections in a bookmark will only be imported for fields that exist in the current app - this applies for bookmarks marked with an `*`.</emergo-app-object-importer-notice>
+				<qs-emergo-app-object-importer-notice icon="bookmark">Imported bookmarks will be associated with the current sheet. Selections in a bookmark will only be imported for fields that exist in the current app - this applies for bookmarks marked with an `*`.</qs-emergo-app-object-importer-notice>
 
 				<div class="section-settings">
 					<label class="lui-checkbox">
@@ -128,11 +128,11 @@
 					</label>
 				</div>
 
-				<emergo-app-object-importer-section-list
+				<qs-emergo-app-object-importer-section-list
 					type="bookmark"
 					items="bookmarks"
 					add="addBookmark"
-				></emergo-app-object-importer-section-list>
+				></qs-emergo-app-object-importer-section-list>
 			</div>
 
 			<!-- Nothing found -->
