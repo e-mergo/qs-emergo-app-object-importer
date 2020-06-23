@@ -9,7 +9,7 @@ QEXT: qs-emergo-app-object-importer.qext
 
 **E-mergo App Object Importer** is a Qlik Sense extension developed by [E-mergo](https://www.e-mergo.nl). This extension enables the app designer to import structured objects of a selected app, like master items and variables, into the current app. This tool simplifies the frequent repetitive task of manually copying over such objects.
 
-This extension is part of the [E-mergo Tools bundle](https://www.e-mergo.nl/e-mergo-tools-bundle).
+This extension is part of the [E-mergo Tools bundle](https://www.e-mergo.nl/e-mergo-tools-bundle/?utm_medium=download&utm_source=tools_bundle&utm_campaign=E-mergo_Extension&utm_term=toolsbundle&utm_content=sitelink).
 
 This extension is [hosted on GitHub](https://github.com/emergo/qs-emergo-app-object-importer). You can report bugs and discuss features on the [issues page](https://github.com/emergo/qs-emergo-app-object-importer/issues).
 
