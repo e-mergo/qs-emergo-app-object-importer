@@ -11,7 +11,7 @@ QEXT: qs-emergo-app-object-importer.qext
 
 This extension is part of the [E-mergo Tools bundle](https://www.e-mergo.nl/e-mergo-tools-bundle/?utm_medium=download&utm_source=tools_bundle&utm_campaign=E-mergo_Extension&utm_term=toolsbundle&utm_content=sitelink).
 
-This extension is [hosted on GitHub](https://github.com/emergo/qs-emergo-app-object-importer). You can report bugs and discuss features on the [issues page](https://github.com/emergo/qs-emergo-app-object-importer/issues).
+This extension is [hosted on GitHub](https://github.com/e-mergo/qs-emergo-app-object-importer). You can report bugs and discuss features on the [issues page](https://github.com/e-mergo/qs-emergo-app-object-importer/issues).
 
 ## Why is this extension needed?
 In larger Qlik Sense environments it is not uncommon to be confronted with the desire to share app objects across multiple apps. Scenarios include sharing once-defined master items and variables, re-using sheet layouts, etc. When apps are developed separately, the only way to share app objects is to manually copy them over. This quickly becomes a repetitive and tedious task, even more so when the app objects contain multiple expressions, color definitions, tags and other details.
