@@ -6,7 +6,7 @@
  *
  * @param  {Object} qlik                Qlik's core API
  * @param  {Object} qvangular           Qlik's Angular implementation
- * @param  {Object} underscore          Underscore
+ * @param  {Object} _                   Underscore
  * @param  {Object} $q                  Angular's Q promise library
  * @param  {Object} translator          Qlik's translation API
  * @param  {Object} util                Qlik's utility library
