@@ -903,7 +903,7 @@ define([
 										}
 									}
 
-									importAlternateStatesPromise = $q.all(addStateItemPromisess);
+									importAlternateStatesPromise = $q.all(addStateItemsPromises);
 								} else {
 									importAlternateStatesPromise = $q.resolve();
 								}
