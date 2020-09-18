@@ -2,7 +2,7 @@
 	"name": "E-mergo App Object Importer",
 	"type": "visualization",
 	"author": "Laurens Offereins, E-mergo",
-	"version": "1.1.20200731",
+	"version": "1.2.20200918",
 	"description": "Import app objects from other apps.",
 	"preview": "logo-emergo.png",
 	"license": "MIT License",
