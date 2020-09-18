@@ -75,23 +75,26 @@ Requests for additional features can be posted in the extension's GitHub reposit
 
 ## Changelog
 
+#### 1.2.20200918 - QS Sept 2020
+- Fixed the layout for smaller extension object sizes.
+
 #### 1.1.20200731
-- Fixed logic for the _Open Documentation_ button
+- Fixed logic for the _Open Documentation_ button.
 
 #### 1.0.20200623
-- Updated docs files
+- Updated docs files.
 
 #### 1.0.20200622
-- Fixed internal naming and updated docs
+- Fixed internal naming and updated docs.
 
 #### 0.3.20200529
-- Fixed import of sheet metadata
-- Fixed import of filterpanes
-- Fixed a potential memory leak when loading the app list multiple times
+- Fixed import of sheet metadata.
+- Fixed import of filterpanes.
+- Fixed a potential memory leak when loading the app list multiple times.
 
 #### 0.2.20200227
-- Added markings when importing bookmarks with missing fields
-- Fixed import of published app objects that were uneditable
+- Added markings when importing bookmarks with missing fields.
+- Fixed import of published app objects that were uneditable.
 
 #### 0.1.20191015
 Initial release.
