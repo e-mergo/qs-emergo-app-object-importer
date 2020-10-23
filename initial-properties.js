@@ -11,6 +11,6 @@ define([
 ], function( qext ) {
 	return {
 		showTitles: false,
-		title: JSON.parse(qext).name
+		title: JSON.parse(qext).title
 	};
 });
