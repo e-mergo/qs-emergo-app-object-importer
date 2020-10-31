@@ -360,6 +360,8 @@ define([
 						},
 						qData: a
 					};
+				}).filter( function( a ) {
+					return ! a.qData.qIsReserved;
 				}), "label");
 			});
 		});
