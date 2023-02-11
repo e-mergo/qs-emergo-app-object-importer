@@ -73,13 +73,13 @@ define([
 
 				$scope.title = function( item ) {
 					return $scope.canAdd(item)
-						? ("Add this " + $scope.type + " to the current app")
+						? ("Add this ".concat($scope.type, " to the current app"))
 						: item.added
-							? ("This " + $scope.type + " is added to the current app")
+							? ("This ".concat($scope.type, " is added to the current app"))
 							: item.failed
-								? ("This " + $scope.type + " could not be added to the current app")
+								? ("This ".concat($scope.type, " could not be added to the current app"))
 								: item.exists
-									? ("This " + $scope.type + " already exists in the current app")
+									? ("This ".concat($scope.type, " already exists in the current app"))
 									: "";
 				};
 			}]
