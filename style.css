@@ -40,13 +40,244 @@
 	width: 150px;
 }
 
-#qs-emergo-app-object-importer-modal .modal-content {
-	height: 400px;
-	overflow-x: hidden;
-	overflow-y: auto;
+/* Modal */
+
+#qs-emergo-app-object-importer-modal {
+	width: 75%;
+	max-width: 1280px;
 }
 
-#qs-emergo-app-object-importer-modal .modal-content.loading {
+#qs-emergo-app-object-importer-modal .modal-content {
+	display: flex;
+	flex-direction: row;
+	height: 65vh;
+	padding: 0px;
+}
+
+/* Modal Navigation */
+
+#qs-emergo-app-object-importer-modal .content-nav {
+	width: 440px;
+	display: flex;
+	flex-direction: row;
+}
+
+#qs-emergo-app-object-importer-modal .loading .content-nav {
+	display: none;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section {
+	width: 200px;
+	height: 100%;
+	overflow-y: scroll;
+	border-right: 1px solid rgba(0,0,0,.1);
+}
+
+#qs-emergo-app-object-importer-modal .nav-section.empty {
+	text-align: center;
+	font-style: italic;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section.app-object-items {
+	width: 240px;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-search {
+	background: transparent;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .assets-search-panel {
+	border-bottom: 1px solid #e6e6e6;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item {
+	width: 100%;
+	border: none;
+	text-align: left;
+	border-bottom: 1px solid #e6e6e6;
+	cursor: pointer;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .app-object-item-selector {
+	display: flex;
+	flex: 1;
+	max-width: 184px;
+	background: transparent;
+	border: none;
+	text-align: left;
+	cursor: pointer;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item:focus {
+	box-shadow: 0 0 1px 1px rgba(63,138,179,.7);
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item.active {
+	background: rgba(0, 0, 0, 0.05);
+	font-weight: 700;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item.active .app-object-item-selector {
+	font-weight: 700;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .active-marker {
+	height: 100%;
+	border-left: 2px solid transparent;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item.active .active-marker {
+	height: 37px;
+	border-left: 2px solid #009845;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .app-item-text {
+	align-items: center;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .app-item-exists,
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .app-item-updatable {
+	padding-right: 0px;
+	opacity: .3;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .app-item-imported,
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .app-item-updated {
+	padding-right: 0px;
+	opacity: 1;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .qv-loader {
+	width: 17px;
+	height: 17px;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-button .qv-loader {
+	margin-top: 3px;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .count {
+	padding-right: 0px;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .lui-list__item .count:not([data-count="0"]):before {
+	content: attr(data-count);
+	padding: 0px 5px;
+	text-align: center;
+	background: #dfdfdf;
+}
+
+#qs-emergo-app-object-importer-modal .searching .nav-section.app-object-assets .lui-list__item .count:not([data-count="0"]):before {
+	border-radius: 8px;
+    font-size: 11px;
+    line-height: 16px;
+    height: 16px;
+    font-weight: 700;
+    color: #595959;
+    background: #ffce26;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .multi-item-selector {
+	position: relative;
+	height: 37px;
+	padding: 10px 12px 10px 10px;
+	box-sizing: border-box;
+	border-right: 1px solid #e6e6e6;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .multi-item-selector-input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .multi-item-selector-indicator {
+	display: block;
+	margin: 2px 0px;
+	color: #fff;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .selected .multi-item-selector-indicator {
+	color: #00873D;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .assets-nohits {
+	display: block;
+	padding-top: 20px;
+	line-height: 1.6;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .assets-nohits .query {
+	width: 100%;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .assets-nohits .query div {
+	text-overflow: ellipsis;
+	display: inline-block;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 200px;
+	vertical-align: middle;
+	width: auto;
+	max-width: calc(168px - 18px); /* Apply correction for browser scroll bar */
+	padding-right: 1px;
+	padding-left: 1px;
+	font-weight: 700;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .assets-nohits .message {
+	display: block;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .list-action-button {
+	display: flex;
+	padding-left: 2px;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .list-action-button .multi-item-selector {
+	border: none;
+}
+
+#qs-emergo-app-object-importer-modal .nav-section .action-button-item {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	padding: 10px;
+}
+
+@media screen and (max-width: 890px) {
+
+	#qs-emergo-app-object-importer-modal .content-nav {
+		width: 241px; /* +1 for the border */
+		flex-direction: column;
+	}
+
+	#qs-emergo-app-object-importer-modal .nav-section {
+		width: 240px;
+	}
+
+	#qs-emergo-app-object-importer-modal .nav-section.app-object-items {
+		border-top: 1px solid rgba(0,0,0,.1);
+	}
+}
+
+/* Modal Content */
+
+#qs-emergo-app-object-importer-modal .content-main {
+	position: relative;
+	flex: 1 1 auto;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 20px;
+	background-color: #fafafa;
+}
+
+#qs-emergo-app-object-importer-modal .loading .content-main,
+#qs-emergo-app-object-importer-modal .nothing .content-main {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -62,123 +293,174 @@
 	display: inline-block;
 }
 
-#qs-emergo-app-object-importer-modal .notice {
-	padding: 10px;
-	margin-bottom: 15px;
-	color: #fff;
-	background: rgba(63,138,179,.6)
+#qs-emergo-app-object-importer-modal .nothing .inline-title {
+	font-style: italic;
+	font-weight: normal;
 }
 
-#qs-emergo-app-object-importer-modal .notice .lui-icon {
-	margin-right: 5px;
+#qs-emergo-app-object-importer-modal .content-section ul {
+	list-style-type: none;
 }
 
-#qs-emergo-app-object-importer-modal .content-section + .content-section {
+#qs-emergo-app-object-importer-modal .item-section .content-section,
+#qs-emergo-app-object-importer-modal .content-section ~ .multi-item-wrapper,
+#qs-emergo-app-object-importer-modal .content-section ~ .content-section {
 	margin-top: 15px;
 	padding-top: 15px;
 	border-top: 1px solid #d9d9d9;
 }
 
-#qs-emergo-app-object-importer-modal .inline-title {
+#qs-emergo-app-object-importer-modal .item-heading,
+#qs-emergo-app-object-importer-modal .section-heading {
 	display: flex;
-	height: 28px;
-	cursor: pointer;
-}
-
-#qs-emergo-app-object-importer-modal .inline-title .title-text {
-	flex: 1 1 auto;
-	align-self: center;
-}
-
-#qs-emergo-app-object-importer-modal .inline-title .lui-button {
-	flex: 0 0 auto;
-	align-self: center;
-	padding: 0 10px;
-}
-
-#qs-emergo-app-object-importer-modal .content-section .inline-title .lui-icon:before {
-	content: "triangle_top";
-}
-
-#qs-emergo-app-object-importer-modal .content-section.toggled .inline-title .lui-icon:before {
-	content: "triangle_bottom";
-}
-
-#qs-emergo-app-object-importer-modal .content-section.toggled h2 ~ * {
-	display: none;
-}
-
-#qs-emergo-app-object-importer-modal .content-section .section-settings {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
 	margin-bottom: 15px;
-	padding: 0 10px;
 }
 
-#qs-emergo-app-object-importer-modal .content-section .section-settings .lui-checkbox__check-text {
-	padding-left: 8px;
-}
-
-#qs-emergo-app-object-importer-modal .lui-list .has-details .lui-list__item {
-	cursor: pointer;
-}
-
-#qs-emergo-app-object-importer-modal .lui-list .exists .lui-list__text,
-#qs-emergo-app-object-importer-modal .lui-list .disabled .lui-list__text {
-	color: rgba(89,89,89,.5);
-}
-
-#qs-emergo-app-object-importer-modal .lui-list li:last-child .lui-list__item {
-	border-bottom: 0px;
-}
-
-#qs-emergo-app-object-importer-modal .item-details {
-	background: rgba(0,0,0,.1);
-	padding: 10px;
+#qs-emergo-app-object-importer-modal .item-title {
+	flex: 1;
 }
 
 #qs-emergo-app-object-importer-modal .item-details .item-detail {
 	display: grid;
-	grid-template-columns: 100px auto;
+	grid-template-columns: 110px 1fr;
+	align-items: center;
 }
 
-#qs-emergo-app-object-importer-modal .item-details .item-detail + .item-detail {
-	margin-top: 10px;
+#qs-emergo-app-object-importer-modal .item-details .item-detail:not(:last-child) {
+	margin-bottom: 5px;
 }
 
-#qs-emergo-app-object-importer-modal .item-details .item-detail dt {
-	font-weight: 700;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+#qs-emergo-app-object-importer-modal .item-details .item-detail .detail-value {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	grid: 1px;
 }
 
-#qs-emergo-app-object-importer-modal .item-details .item-detail .item-description + dd {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-#qs-emergo-app-object-importer-modal .item-details .item-detail .item-definition + dd {
-	font-family: Courier, monospace;
-	font-weight: 400;
-	word-wrap: break-word;
-	overflow: hidden;
-	white-space: pre-wrap;
-	text-overflow: ellipsis;
-}
-
-#qs-emergo-app-object-importer-modal .add-button {
-	height: 36px;
-	padding: 0 10px;
-}
-
-#qs-emergo-app-object-importer-modal .add-button .lui-icon {
-	margin: 0 5px;
-}
-
-#qs-emergo-app-object-importer-modal .add-button .qv-loader {
-	height: 14px;
-	width: 14px;
-	margin: 0 5px;
+#qs-emergo-app-object-importer-modal .is-code {
 	display: inline-block;
-	vertical-align: middle;
+	font-family: monospace;
+	background: rgba(0, 0, 0, 0.05);
+	margin: 1px;
+	padding: 2px 4px;
+	line-break: anywhere;
+	user-select: text;
+}
+
+#qs-emergo-app-object-importer-modal .item-preview .section-body {
+	border: 1px solid #0003;
+	width: 100%;
+	aspect-ratio: 2 / 1;
+	overflow: hidden;
+}
+
+#qs-emergo-app-object-importer-modal .item-preview .item-preview-iframe {
+	height: 200%;
+	width: 200%;
+	margin: 0;
+	padding: 0;
+	transform: scale(.5);
+	transform-origin: 0 0;
+}
+
+#qs-emergo-app-object-importer-modal .multi-item-nav {
+	display: flex;
+}
+
+#qs-emergo-app-object-importer-modal .multi-item-nav .section-title {
+	flex: 1;
+	margin: 0px;
+	line-height: 28px;
+}
+
+#qs-emergo-app-object-importer-modal .multi-item-nav .section-title + span {
+	margin-right: 10px;
+	line-height: 28px;
+}
+
+#qs-emergo-app-object-importer-modal .multi-item-nav .section-title ~ * {
+	display: block;
+}
+
+#qs-emergo-app-object-importer-modal .item-code .lui-textarea {
+	resize: none;
+	height: inherit;
+	height: 35vh;
+	min-height: 200px;
+	max-height: 400px;
+}
+
+/* Layout changes per QS Nov 2022 */
+
+.lui-modal-background:not(.lui-fade):has(+ .qs-emergo-modal) {
+	opacity: .5;
+}
+
+#qs-emergo-app-object-importer-modal.qs-emergo-modal {
+	display: flex;
+	flex-direction: column;
+	width: 93%;
+	height: 93%;
+	max-height: calc(100% - 24px);
+	width: calc(100% - 24px);
+	color: #404040;
+}
+
+.qs-emergo-modal .lui-dialog__header {
+	display: flex;
+	justify-content: space-between;
+	height: 24px;
+	padding: 12px 8px 12px 12px;
+	box-sizing: content-box;
+	background-color: #fafafa;
+	border-bottom: 1px rgba(0, 0, 0, 0.15) solid;
+	line-height: 24px;
+}
+
+.qs-emergo-modal .qs-emergo-modal-close {
+	height: 30px;
+	margin-top: -2px;
+	padding: 7px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+}
+
+.qs-emergo-modal .lui-dialog__title {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
+}
+
+#qs-emergo-app-object-importer-modal.qs-emergo-modal .modal-content {
+	max-height: auto;
+	background-color: #f2f2f2;
+}
+
+.qs-emergo-modal .lui-dialog__footer {
+	display: flex;
+	height: auto;
+	justify-content: flex-end;
+	background-color: #fafafa;
+	border-top: 1px rgba(0, 0, 0, 0.15) solid;
+}
+
+.qs-emergo-modal .lui-dialog__footer .lui-button {
+	height: 32px;
+	color: #404040;
+	background-color: rgba(255,255,255,.6);
+	font-size: 14px;
+}
+
+.qs-emergo-modal .lui-dialog__footer .lui-button:hover {
+	background-color: rgba(64, 64, 64, 0.05);
+	border: 1px solid rgba(0, 0, 0, 0.23);
+}
+
+.qs-emergo-modal .lui-dialog__footer .lui-button:active {
+	background-color: rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(0, 0, 0, 0.23);
 }

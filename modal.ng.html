@@ -1,148 +1,173 @@
-<lui-dialog id="qs-emergo-app-object-importer-modal" x-variant="{{::variant}}" class="qv-confirm-dialog">
+<lui-dialog id="qs-emergo-app-object-importer-modal" x-variant="{{::variant}}" class="qv-confirm-dialog qs-emergo-modal">
 	<lui-dialog-header ng-if="input.title">
 		<lui-dialog-title>{{input.title}}</lui-dialog-title>
+		<button type="button" qva-activate="close()" class="qs-emergo-modal-close lui-icon lui-icon--close" q-title-translation="Common.Close"></button>
 	</lui-dialog-header>
-	<lui-dialog-body class="modal-content" ng-class="{ loading: loading }">
-		<div class="modal-loading-container" ng-if="loading">
-			<div class="qv-loader modal-loader"></div>
+	<lui-dialog-body class="modal-content" ng-class="{ loading: loading, nothing: nothingFound || !activeItem, searching: !!search.query }">
+		<div class="content-nav">
+			<div class="nav-section app-object-assets">
+				<qv-assets-search-panel query="search.query" look="light"></qv-assets-search-panel>
+				<div class="lui-list">
+					<button type="button" class="app-object-asset lui-list__item library-item" ng-class="{ active: activeAsset === asset.id }" ng-repeat="asset in assets track by asset.id" qva-activate="assetClicked(asset.id, $event)" ng-title="asset.title">
+						<div class="active-marker"></div>
+						<div class="lui-list__text library-item-text app-asset-text">
+							<div class="titles">
+								<span class="title">{{asset.label}}</span>
+							</div>
+							<div class="lui-list__aside count" ng-attr-data-count="{{filteredItems[asset.id].length}}"></div>
+						</div>
+					</button>
+				</div>
+			</div>
+			<div class="nav-section app-object-items" ng-class="{ empty: ! selected.length }">
+				<span class="assets-nohits" ng-show="!search.query && !selected.length" q-translation="library.noitems"></span>
+				<qv-assets-search-no-hits query="search.query" show="search.query && !selected.length"></qv-assets-search-no-hits>
+				<div class="lui-list">
+					<div class="app-object-item lui-list__item library-item" ng-class="{ active: activeItem.id === item.id, selected: item.status.selected }" ng-repeat="item in selected track by item.id">
+						<div class="active-marker"></div>
+						<div class="multi-item-selector">
+							<input type="checkbox" class="multi-item-selector-input" ng-model="item.status.selected" />
+							<i class="multi-item-selector-indicator">
+								<svg ng-if="!item.status.selected" width="1em" height="1em" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.603119339" stroke-opacity="0.146654212"><rect stroke="#000000" fill="currentColor" x="0.5" y="0.5" width="15" height="15" rx="2"></rect></g></svg>
+								<svg ng-if="item.status.selected" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 20 20"><rect width="20" height="20" fill="currentColor" rx="3"></rect><path fill="#fff" fill-rule="evenodd" d="m12.627 6.617-4.206 4.205-1.037-1.035a1.25 1.25 0 1 0-1.768 1.767l1.92 1.919a1.25 1.25 0 0 0 1.769 0l5.09-5.089a1.25 1.25 0 1 0-1.768-1.768Z" clip-rule="evenodd"></path></svg>
+							</i>
+						</div>
+						<button type="button" class="app-object-item-selector" qva-activate="itemClicked(item, $event)" ng-attr-title="{{itemLabel(item)}}">
+							<div class="lui-list__aside lui-icon lui-icon--{{item.icon}}" ng-if="item.icon"></div>
+							<div class="lui-list__text library-item-text app-item-text">
+								<div class="titles">
+									<span class="title">{{itemLabel(item)}}</span>
+								</div>
+								<div class="lui-list__aside lui-icon lui-icon--tick" ng-class="{ 'app-item-exists lui-icon--tick': item.status.exists, 'app-item-imported lui-icon--tick': item.status.imported || item.status.updated, 'qv-loader': item.status.importing || item.status.updating }" ng-if="(item.status.exists || item.status.imported || item.status.updated) && !item.status.updatable" ng-attr-title="{{item.status.imported ? 'This object is imported to your app' : (item.status.updated ? 'This object is updated in your app' : 'This object already exists in your app')}}"></div>
+								<div class="lui-list__aside lui-icon lui-icon--sync" ng-class="{ 'app-item-updatable': item.status.updatable }" ng-if="item.status.updatable && !item.status.updated" ng-attr-title="This object is updatable in your app"></div>
+							</div>
+						</button>
+					</div>
+				</div>
+				<div class="list-action-button" ng-if="selected.length > 1" ng-class="{ selected: status.selected }">
+					<div class="multi-item-selector">
+						<input type="checkbox" class="multi-item-selector-input" ng-model="status.selected" />
+						<i class="multi-item-selector-indicator">
+							<svg ng-if="!status.selected" width="1em" height="1em" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.603119339" stroke-opacity="0.146654212"><rect stroke="#000000" fill="currentColor" x="0.5" y="0.5" width="15" height="15" rx="2"></rect></g></svg>
+							<svg ng-if="status.selected" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 20 20"><rect width="20" height="20" fill="currentColor" rx="3"></rect><path fill="#fff" fill-rule="evenodd" d="m12.627 6.617-4.206 4.205-1.037-1.035a1.25 1.25 0 1 0-1.768 1.767l1.92 1.919a1.25 1.25 0 0 0 1.769 0l5.09-5.089a1.25 1.25 0 1 0-1.768-1.768Z" clip-rule="evenodd"></path></svg>
+						</i>
+					</div>
+					<div class="action-button-item">
+						<button type="button" class="lui-button btn-add-multiple" qva-activate="importMultipleItems()" ng-disabled="!getSelectedCount()"><i class="lui-button__icon lui-icon" ng-class="{ 'lui-icon--tick': status.imported, 'lui-icon--warning': status.importFailed, 'lui-icon--import': !status.imported && !status.importing && !status.importFailed, 'qv-loader': status.importing }"></i><span class="lui-button__text" q-translation="{{getSelectedCount() ? (status.imported ? 'Imported (' : 'Import selected (').concat(getSelectedCount(), ')') : 'Import multiple'}}"></span></button>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="content" ng-if="!loading">
-			<qs-emergo-app-object-importer-notice ng-if="!nothingFound">Items marked with this symbol already exist inside the current app.</qs-emergo-app-object-importer-notice>
 
-			<!-- Sheets -->
-			<div class="content-section app-sheets" ng-if="sheets.length" ng-class="{ toggled: !show.sheets }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'sheets')">
-					<span class="title-text"><i class="lui-icon"></i> Sheets ({{sheets.length}})</span>
-					<button class="lui-button" ng-disabled="!show.sheets" qva-activate="addAllItems('sheets')">Add all sheets</button>
-				</h2>
+		<div class="content-main">
+			<div class="modal-loading-container" ng-if="loading">
+				<div class="qv-loader modal-loader"></div>
+			</div>
+			<div class="content" ng-if="!loading">
+				<div class="content-sections app-object-item-details" ng-if="!!activeItem">
 
-<!-- 				<div class="section-settings">
-					<label class="lui-checkbox">
-						<input class="lui-checkbox__input" type="checkbox" aria-label="Import alternate states" ng-model="settings.sheetsImportAlternateStates" />
-						<div class="lui-checkbox__check-wrap">
-							<span class="lui-checkbox__check"></span>
-							<span class="lui-checkbox__check-text">Add relevant alternate states when importing sheets and sheet objects</span>
+					<div class="content-section item-heading">
+						<div class="item-title">
+							<h2 class="section-title">{{itemLabel(activeItem)}}</h2>
+							<span class="section-subtitle">{{activeItem.id}}</span>
 						</div>
-					</label>
-				</div>
- -->
-				<qs-emergo-app-object-importer-section-list
-					type="sheet"
-					items="sheets"
-					add="addSheet"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Dimensions -->
-			<div class="content-section app-dimensions" ng-if="dimensions.length" ng-class="{ toggled: !show.dimensions }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'dimensions')">
-					<span class="title-text"><i class="lui-icon"></i> Dimensions ({{dimensions.length}})</span>
-					<button class="lui-button" ng-disabled="!show.dimensions" qva-activate="addAllItems('dimensions')">Add all dimensions</button>
-				</h2>
-
-				<qs-emergo-app-object-importer-notice>Dimensions will be imported with their original object id. This helps keep linked objects connected in the current app.</qs-emergo-app-object-importer-notice>
-
-				<qs-emergo-app-object-importer-section-list
-					type="dimension"
-					items="dimensions"
-					add="addDimension"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Measures -->
-			<div class="content-section app-measures" ng-if="measures.length" ng-class="{ toggled: !show.measures }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'measures')">
-					<span class="title-text"><i class="lui-icon"></i> Measures ({{measures.length}})</span>
-					<button class="lui-button" ng-disabled="!show.measures" qva-activate="addAllItems('measures')">Add all measures</button>
-				</h2>
-
-				<qs-emergo-app-object-importer-notice>Measures will be imported with their original object id. This helps keep linked objects connected in the current app.</qs-emergo-app-object-importer-notice>
-
-				<qs-emergo-app-object-importer-section-list
-					type="measure"
-					items="measures"
-					add="addMeasure"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Visualizations (master objects) -->
-			<div class="content-section app-visualizations" ng-if="masterObjects.length" ng-class="{ toggled: !show.masterObjects }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'masterObjects')">
-					<span class="title-text"><i class="lui-icon"></i> Visualizations ({{masterObjects.length}})</span>
-					<button class="lui-button" ng-disabled="!show.masterObjects" qva-activate="addAllItems('masterObjects')">Add all visualizations</button>
-				</h2>
-
-				<qs-emergo-app-object-importer-notice>Visualizations (master objects) will be imported with their original object id. This helps keep linked objects connected in the current app.</qs-emergo-app-object-importer-notice>
-
-				<qs-emergo-app-object-importer-section-list
-					type="masterobject"
-					items="masterObjects"
-					add="addMasterObject"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Alternate States -->
-			<div class="content-section app-alternate-states" ng-if="alternateStates.length" ng-class="{ toggled: !show.alternateStates }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'alternateStates')">
-					<span class="title-text"><i class="lui-icon"></i> Alternate States ({{alternateStates.length}})</span>
-					<button class="lui-button" ng-disabled="!show.alternateStates" qva-activate="addAllItems('alternateStates')">Add all alternate states</button>
-				</h2>
-
-				<qs-emergo-app-object-importer-section-list
-					type="alternate-state"
-					items="alternateStates"
-					add="addAlternateState"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Variables -->
-			<div class="content-section app-variables" ng-if="variables.length" ng-class="{ toggled: !show.variables }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'variables')">
-					<span class="title-text"><i class="lui-icon"></i> Variables ({{variables.length}})</span>
-					<button class="lui-button" ng-disabled="!show.variables" qva-activate="addAllItems('variables')">Add all variables</button>
-				</h2>
-
-				<qs-emergo-app-object-importer-section-list
-					type="variable"
-					items="variables"
-					add="addVariable"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Bookmarks -->
-			<div class="content-section app-bookmarks" ng-if="bookmarks.length" ng-class="{ toggled: !show.bookmarks }">
-				<h2 class="inline-title" qva-activate="toggle($event, 'bookmarks')">
-					<span class="title-text"><i class="lui-icon"></i> Bookmarks ({{bookmarks.length}})</span>
-					<button class="lui-button" ng-disabled="!show.bookmarks" qva-activate="addAllItems('bookmarks')">Add all bookmarks</button>
-				</h2>
-
-				<qs-emergo-app-object-importer-notice icon="bookmark">Imported bookmarks will be associated with the current sheet. Selections in a bookmark will only be imported for fields that exist in the current app - this applies for bookmarks marked with an `*`.</qs-emergo-app-object-importer-notice>
-
-				<div class="section-settings">
-					<label class="lui-checkbox">
-						<input class="lui-checkbox__input" type="checkbox" aria-label="Import alternate states" ng-model="settings.bookmarksImportAlternateStates" />
-						<div class="lui-checkbox__check-wrap">
-							<span class="lui-checkbox__check"></span>
-							<span class="lui-checkbox__check-text">Add relevant alternate states when importing bookmarks</span>
+						<div class="lui-buttongroup">
+							<button type="button" class="lui-button btn-import-item" qva-activate="importItem(activeItem)" title="Import object to your app" ng-if="activeItem.status.importable"><i class="lui-button__icon lui-icon" ng-class="{ 'lui-icon--tick': activeItem.status.imported, 'lui-icon--warning': activeItem.status.importFailed, 'lui-icon--import': !activeItem.status.imported && !activeItem.status.importing && !activeItem.status.importFailed }" ng-if="!activeItem.status.importing"></i><span class="lui-button__text" q-translation="{{activeItem.status.imported ? 'Object imported' : (activeItem.status.importing ? 'Importing object&hellip;' : (activeItem.status.importFailed ? 'Failed importing' : 'Import object'))}}"></span></button>
+							<button type="button" class="lui-button btn-update-item" qva-activate="updateItem(activeItem)" title="Update object in your app" ng-if="activeItem.status.updatable || activeItem.status.updated"><i class="lui-button__icon lui-icon" ng-class="{ 'lui-icon--tick': activeItem.status.updated, 'lui-icon--warning': activeItem.status.updateFailed, 'lui-icon--sync': !activeItem.status.updated && !activeItem.status.updating && !activeItem.status.updateFailed }" ng-if="!activeItem.status.updating"></i><span class="lui-button__text" q-translation="{{activeItem.status.updated ? 'Object updated' : (activeItem.status.updating ? 'Updating object&hellip;' : (activeItem.status.updateFailed ? 'Failed updating' : 'Update object'))}}"></span></button>
 						</div>
-					</label>
+					</div>
+
+					<div class="content-section item-details" ng-if="activeItem.details.length">
+						<div class="section-heading">
+							<h2 class="section-title">Details</h2>
+						</div>
+						<div class="section-body">
+							<ul>
+								<li class="item-detail" ng-repeat="detail in activeItem.details">
+									<div class="detail-term">
+										<span class="title">{{detail.label}}</span>
+									</div>
+									<div class="detail-value">
+										<span class="description" ng-class="{ 'is-code': detail.isCode }" ng-repeat="value in detail.value track by $index">{{value}}</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="content-section item-preview" ng-if="activeItem.preview">
+						<div class="section-heading">
+							<h2 class="section-title">Preview</h2>
+						</div>
+						<div class="section-body">
+							<iframe ng-src="{{activeItem.preview.url}}" class="item-preview-iframe" frameborder="0"></iframe>
+						</div>
+					</div>
+
+					<div class="multi-item-wrapper item-section" ng-if="activeItem.items">
+						<div class="multi-item-nav section-heading">
+							<h2 class="section-title">{{activeSubItem.id}}</h2>
+							<span>Showing {{activeSubItemIx + 1}} / {{activeItem.items.length}}</span>
+							<div class="lui-buttongroup">
+								<lui-button class="btn-multi-item-prev" qva-activate="subItemClicked(activeSubItemIx - 1)" ng-disabled="activeSubItemIx == 0" q-title-translation="Common.Previous"><i class="lui-icon lui-icon--previous lui-button__icon"></i></lui-button>
+								<lui-button class="btn-multi-item-next" qva-activate="subItemClicked(activeSubItemIx + 1)" ng-disabled="activeSubItemIx == activeItem.items.length - 1" q-title-translation="Common.Next"><i class="lui-icon lui-icon--next lui-button__icon"></i></lui-button>
+							</div>
+						</div>
+
+						<div class="content-section item-details" ng-if="activeSubItem.details.length">
+							<div class="section-heading">
+								<h2 class="section-title">Item</h2>
+							</div>
+							<div class="section-body">
+								<ul>
+									<li class="item-detail" ng-repeat="detail in activeSubItem.details">
+										<div class="detail-term">
+											<span class="title">{{detail.label}}</span>
+										</div>
+										<div class="detail-value">
+											<span class="description" ng-class="{ 'is-code': detail.isCode }" ng-repeat="value in detail.value track by $index">{{value}}</span>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="content-section item-code" ng-repeat="code in activeSubItem.code">
+							<div class="section-heading">
+								<h2 class="section-title">{{code.label}}</h2>
+								<lui-button class="btn-copy-code" qva-activate="copyToClipboard(code.value)" title="Copy code to the clipboard"><i class="lui-button__icon lui-icon lui-icon--copy"></i><span class="lui-button__text" q-translation="Common.Copy"></span></lui-button>
+							</div>
+							<div class="section-body">
+								<textarea class="lui-textarea">{{code.value}}</textarea>
+							</div>
+						</div>
+					</div>
+
+					<div class="single-item-wrapper item-section" ng-if="!activeItem.items">
+						<div class="content-section item-code" ng-repeat="code in activeItem.code">
+							<div class="section-heading">
+								<h2 class="section-title">{{code.label}}</h2>
+								<lui-button class="btn-copy-code" qva-activate="copyToClipboard(code.value)" title="Copy code to the clipboard"><i class="lui-button__icon lui-icon lui-icon--copy"></i><span class="lui-button__text" q-translation="Common.Copy"></span></lui-button>
+							</div>
+							<div class="section-body">
+								<textarea class="lui-textarea">{{code.value}}</textarea>
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<qs-emergo-app-object-importer-section-list
-					type="bookmark"
-					items="bookmarks"
-					add="addBookmark"
-				></qs-emergo-app-object-importer-section-list>
-			</div>
-
-			<!-- Nothing found -->
-			<div class="content-section nothing-found" ng-if="nothingFound">
-				<h2 class="inline-title">There were no items found in the selected app</h2>
+				<!-- Nothing found -->
+				<div class="content-section nothing-found" ng-if="nothingFound">
+					<h2 class="inline-title">There were no items found in the selected app</h2>
+				</div>
+				<!-- Nothing selected -->
+				<div class="content-section nothing-selected" ng-if="!activeItem">
+					<h2 class="inline-title">Select an item on the left to inspect its details</h2>
+				</div>
 			</div>
 		</div>
 	</lui-dialog-body>
 	<lui-dialog-footer>
-		<lui-button x-variant="{{::variant}}" ng-if="!input.hideCancelButton" ng-click="close(false);">{{::cancelLabel}}</lui-button>
-		<lui-button x-variant="{{::variant}}" ng-if="!input.hideOkButton" ng-click="close(true);">{{::okLabel}}</lui-button>
+		<lui-button x-variant="{{::variant}}" ng-if="!input.hideOkButton" qva-activate="close(true);">{{::okLabel}}</lui-button>
 	</lui-dialog-footer>
 </lui-dialog>
