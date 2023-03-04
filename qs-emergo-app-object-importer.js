@@ -13,6 +13,8 @@
  * @param  {Object} Resize              Qlik's resize API
  * @param  {Object} props               Property panel definition
  * @param  {Object} initProps           Initial properties
+ * @param  {Object} importers           Import functions
+ * @param  {Object} appInfo             App information functions
  * @param  {Object} util                E-mergo utility functions
  * @param  {Object} uiUtil              E-mergo UI utility functions
  * @param  {String} css                 Extension stylesheet
@@ -559,7 +561,7 @@ define([
 	 *
 	 * @return {String}
 	 */
-	baseURI = (globalOpts.isSecure ? "https://" : "http://").concat(globalOpts.host, ":", globalOpts.port, globalOpts.prefix.replace(/\/+$/g, ""), "/"),
+	baseURI = (globalOpts.isSecure ? "https://" : "http://").concat(globalOpts.host, globalOpts.port ? ":" : "", globalOpts.port, globalOpts.prefix.replace(/\/+$/g, ""), "/"),
 
 	/**
 	 * Return the url for a single sheet
@@ -687,7 +689,7 @@ define([
 		 * @return {Object} Popover methods
 		 */
 		popover = uiUtil.uiSearchableListPopover({
-			title: "Apps",
+			title: translator.get("QCS.Common.Browser.Filter.ResourceType.Value.app"),
 			get: function( setItems ) {
 				if ("undefined" === typeof appList) {
 					qlik.getGlobal().getAppList( function( items ) {
@@ -700,7 +702,7 @@ define([
 						});
 
 						setItems(appList);
-					});
+					}, { openWithoutData: true });
 				} else {
 					setItems(appList);
 				}
@@ -723,7 +725,6 @@ define([
 		 * @return {Void}
 		 */
 		showAppObjectImporterForApp = function( appData ) {
-			console.log("showAppObjectImporterForApp", appData);
 
 			// Open the modal
 			modal = qvangular.getService("luiDialog").show({
@@ -862,7 +863,6 @@ define([
 					 * @return {Void}
 					 */
 					$scope.itemClicked = function( item ) {
-						console.log(item);
 
 						// Set active item
 						$scope.activeItem = item;
@@ -1001,7 +1001,6 @@ define([
 								$scope.allItems[i] = args[i].map(prepareItem);
 							}
 						}
-						console.log(currAppObjects, $scope.allItems);
 
 						// Set default opener to sheets
 						$scope.selected = $scope.allItems.sheet;
