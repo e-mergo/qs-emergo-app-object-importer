@@ -9,7 +9,6 @@
  * @param  {Object} _                   Underscore
  * @param  {Object} $q                  Angular's Q promise library
  * @param  {Object} translator          Qlik's translation API
- * @param  {Object} qUtil               Qlik's utility library
  * @param  {Object} Resize              Qlik's resize API
  * @param  {Object} props               Property panel definition
  * @param  {Object} initProps           Initial properties
@@ -28,7 +27,6 @@ define([
 	"underscore",
 	"ng!$q",
 	"translator",
-	"util",
 	"core.utils/resize",
 	"./properties",
 	"./initial-properties",
@@ -39,28 +37,33 @@ define([
 	"text!./style.css",
 	"text!./template.ng.html",
 	"text!./modal.ng.html"
-], function( qlik, qvangular, _, $q, translator, qUtil, Resize, props, initProps, importers, appInfo, util, uiUtil, css, tmpl, modalTmpl ) {
+], function( qlik, qvangular, _, $q, translator, Resize, props, initProps, importers, appInfo, util, uiUtil, css, tmpl, modalTmpl ) {
 
 	// Add global styles to the page
 	util.registerStyle("qs-emergo-app-object-importer", css);
+
+	/**
+	 * Holds the reference to the current app's API
+	 *
+	 * @type {Object}
+	 */
+	var currApp = qlik.currApp(),
 
 	/**
 	 * Holds the objects of the current app
 	 *
 	 * @type {Object}
 	 */
-	var currAppObjects = {
+	currAppObjects = {
 		load: function() {
-			var app = qlik.currApp();
-
 			return $q.all({
-				script: getScriptInfo(app),
-				sheet: getSheetInfo(app),
-				dimension: getDimensionInfo(app),
-				measure: getMeasureInfo(app),
-				masterObject: getMasterObjectInfo(app),
-				"alternate-state": getAlternateStateInfo(app),
-				variable: getVariableInfo(app)
+				script: getScriptInfo(currApp),
+				sheet: getSheetInfo(currApp),
+				dimension: getDimensionInfo(currApp),
+				measure: getMeasureInfo(currApp),
+				masterObject: getMasterObjectInfo(currApp),
+				"alternate-state": getAlternateStateInfo(currApp),
+				variable: getVariableInfo(currApp)
 			}).then( function( args ) {
 				for (var i in args) {
 					currAppObjects[i] = args[i];
@@ -551,7 +554,7 @@ define([
 	 *
 	 * @type {Object}
 	 */
-	globalOpts = qlik.getGlobal().session.options,
+	globalOpts = currApp.global.session.options,
 
 	/**
 	 * Holds the app's global baseURI
@@ -676,7 +679,7 @@ define([
 		/**
 		 * Holds the loaded apps
 		 *
-		 * This is loaded once when calling `qlik.getGlobal().getAppList()` to
+		 * This is loaded once when calling `currApp.global.getAppList()` to
 		 * prevent max listener errors on the related event emitter.
 		 *
 		 * @type {Array}
@@ -692,7 +695,7 @@ define([
 			title: translator.get("QCS.Common.Browser.Filter.ResourceType.Value.app"),
 			get: function( setItems ) {
 				if ("undefined" === typeof appList) {
-					qlik.getGlobal().getAppList( function( items ) {
+					currApp.global.getAppList( function( items ) {
 						appList = items.map( function( a ) {
 							return {
 								value: a.qTitle,
