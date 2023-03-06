@@ -7,15 +7,13 @@
  * @param  {Object} qlik                Qlik's core API
  * @param  {Object} _                   Underscore
  * @param  {Object} $q                  Angular's Q promise library
- * @param  {Object} qUtil               Qlik's utility library
  * @return {Object}                     Importer API
  */
 define([
 	"qlik",
 	"underscore",
-	"ng!$q",
-	"util"
-], function( qlik, _, $q, qUtil ) {
+	"ng!$q"
+], function( qlik, _, $q ) {
 
 	/**
 	 * Holds default import options
