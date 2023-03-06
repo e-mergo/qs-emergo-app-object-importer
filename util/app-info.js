@@ -1,14 +1,13 @@
 /**
  * E-mergo utility functions for getting app info
  *
- * @version 20230225
+ * @version 20230306
  * @author Laurens Offereins <https://github.com/lmoffereins>
  *
  * @param  {Object} qlik                Qlik's core API
  * @param  {Object} _                   Underscore
  * @param  {Object} $q                  Angular's Q promise library
  * @param  {Object} translator          Qlik's translator API
- * @param  {Object} qUtil               Qlik's utility library
  * @return {Object}                     Importer API
  */
 define([
@@ -16,9 +15,8 @@ define([
 	"axios",
 	"underscore",
 	"ng!$q",
-	"translator",
-	"util"
-], function( qlik, axios, _, $q, translator, qUtil ) {
+	"translator"
+], function( qlik, axios, _, $q, translator ) {
 
 	/**
 	 * Holds the current app
@@ -92,7 +90,7 @@ define([
 	 * @return {Promise} Request response
 	 */
 	request = function( args ) {
-		var globalProps = qlik.getGlobal().session.options;
+		var globalProps = currApp.global.session.options;
 
 		// When provided just the url
 		if ("string" === typeof args) {
@@ -345,7 +343,7 @@ define([
 				});
 
 				// Combine data to load
-				loaders = qUtil.extend({}, sheets, sheetObjects);
+				loaders = _.extend({}, sheets, sheetObjects);
 
 				// Load extension metadata
 				loaders.extensionList = extensionIds.length ? getExtensions({ extensionIds: extensionIds }) : $q.resolve({});
@@ -1288,7 +1286,7 @@ define([
 
 	// Set `isDesktop` on start
 	(function() {
-		qlik.getGlobal().isPersonalMode().then( function( resp ) {
+		currApp.global.isPersonalMode().then( function( resp ) {
 			isDesktop = resp.qReturn;
 		});
 	})();
