@@ -1,7 +1,7 @@
 /**
  * E-mergo utility functions for getting app info
  *
- * @version 20230306
+ * @version 20230308
  * @author Laurens Offereins <https://github.com/lmoffereins>
  *
  * @param  {Object} qlik                Qlik's core API
@@ -353,7 +353,7 @@ define([
 
 					// Walk sheets, sort by rank
 					var sheetInfo = _.keys(sheets).map( function( sheetId ) {
-						var object = args[sheetId], visualizations = [], visualizationList = null, details, preview;
+						var object = args[sheetId], visualizations = [], visualizationList = null, details, qMeta = object.layout.qMeta, preview;
 
 						// Collect sheet objects
 						if (options.loadWithObjects) {
@@ -390,21 +390,21 @@ define([
 							},
 							createdDate: {
 								label: "Created", // Translation?
-								value: object.layout.qMeta.createdDate ? new Date(object.layout.qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.createdDate ? new Date(qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							status: {
 								label: translator.get("geo.properties.wms.status"),
-								value: object.layout.qMeta.published
-									? translator.get("AppOverview.Content.PublicSheets").concat(" (", new Date(object.layout.qMeta.publishTime).toLocaleString(), ")")
-									: (object.layout.qMeta.approved ? translator.get("AppOverview.Content.CommunitySheets") : (!isDesktop ? "Personal" : null))
+								value: qMeta.published
+									? translator.get("AppOverview.Content.PublicSheets").concat(" (", new Date(qMeta.publishTime).toLocaleString(), ")")
+									: (qMeta.approved ? translator.get("AppOverview.Content.CommunitySheets") : (!isDesktop ? "Personal" : null))
 							},
 							modifiedDate: {
 								label: translator.get("QCS.Common.DataCatalog.Dataset.Property.LastModified"),
-								value: object.layout.qMeta.modifiedDate ? new Date(object.layout.qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.modifiedDate ? new Date(qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							owner: {
 								label: translator.get("scripteditor.dataconnectors.owner"),
-								value: object.layout.qMeta.owner ? object.layout.qMeta.owner.userDirectory.concat("/", object.layout.qMeta.owner.userId) : null // Not available on QS Desktop
+								value: "string" === typeof qMeta.owner ? qMeta.owner : (qMeta.owner ? "".concat(qMeta.owner.userDirectory, "/", qMeta.owner.userId) : null) // Not available on QS Desktop
 							},
 							visualizations: {
 								label: translator.get("library.Visualizations"),
@@ -432,7 +432,7 @@ define([
 						// Add object data to list
 						return {
 							id: sheetId,
-							label: object.layout.qMeta.title,
+							label: qMeta.title,
 							details: details,
 							visualizations: visualizations,
 							rank: object.properties.rank,
@@ -628,13 +628,13 @@ define([
 							return dfd.promise;
 						});
 					}).then( function( object ) {
-						var isDrilldown = object.properties.qDim.qGrouping === "H",
+						var isDrilldown = object.properties.qDim.qGrouping === "H", details, qMeta = object.layout.qMeta;
 
 						// Collect dimension details
 						details = {
 							description: {
 								label: translator.get("Common.Description"),
-								value: object.layout.qMeta.description
+								value: qMeta.description
 							},
 							type: {
 								label: translator.get("library.preview.header.type").replace(":", ""), // Remove trailing/leading colon
@@ -651,34 +651,34 @@ define([
 							},
 							createdDate: {
 								label: "Created", // Translation?
-								value: object.layout.qMeta.createdDate ? new Date(object.layout.qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.createdDate ? new Date(qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							publishedDate: {
 								label: translator.get("App.PublishedDate").replace(":", ""),
-								value: object.layout.qMeta.published ? new Date(object.layout.qMeta.publishTime).toLocaleString() : translator.get("Common.No")
+								value: qMeta.published ? new Date(qMeta.publishTime).toLocaleString() : translator.get("Common.No")
 							},
 							approved: {
 								label: "Approved", // Translation?
-								value: object.layout.qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
+								value: qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
 							},
 							modifiedDate: {
 								label: "Modified", // Translation?
-								value: object.layout.qMeta.modifiedDate ? new Date(object.layout.qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.modifiedDate ? new Date(qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							owner: {
 								label: "Owner", // translation?
-								value: object.layout.qMeta.owner ? object.layout.qMeta.owner.userDirectory.concat("/", object.layout.qMeta.owner.userId) : null // Not available on QS Desktop
+								value: "string" === typeof qMeta.owner ? qMeta.owner : (qMeta.owner ? qMeta.owner.userDirectory.concat("/", qMeta.owner.userId) : null) // Not available on QS Desktop
 							},
 							tags: {
 								label: translator.get("Common.Tags"),
-								value: (object.layout.qMeta.tags || [])
+								value: (qMeta.tags || [])
 							}
 						};
 
 						// Add item to the list
 						list.push({
 							id: object.layout.qInfo.qId,
-							label: object.layout.qMeta.title,
+							label: qMeta.title,
 							icon: object.__validation.hasError ? "debug" : (isDrilldown ? "drill-down" : false),
 							details: details,
 							layout: object.layout,
@@ -741,12 +741,13 @@ define([
 							return dfd.promise;
 						});
 					}).then( function( object ) {
+						var details, qMeta = object.layout.qMeta;
 
 						// Collect measure details
-						var details = {
+						details = {
 							description: {
 								label: translator.get("Common.Description"),
-								value: object.layout.qMeta.description
+								value: qMeta.description
 							},
 							label: {
 								label: translator.get("Common.Label"),
@@ -759,34 +760,34 @@ define([
 							},
 							createdDate: {
 								label: "Created", // Translation?
-								value: object.layout.qMeta.createdDate ? new Date(object.layout.qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.createdDate ? new Date(qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							publishedDate: {
 								label: translator.get("App.PublishedDate").replace(":", ""),
-								value: object.layout.qMeta.published ? new Date(object.layout.qMeta.publishTime).toLocaleString() : translator.get("Common.No")
+								value: qMeta.published ? new Date(qMeta.publishTime).toLocaleString() : translator.get("Common.No")
 							},
 							approved: {
 								label: "Approved", // Translation?
-								value: object.layout.qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
+								value: qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
 							},
 							modifiedDate: {
 								label: "Modified", // Translation?
-								value: object.layout.qMeta.modifiedDate ? new Date(object.layout.qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.modifiedDate ? new Date(qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							owner: {
 								label: "Owner", // translation?
-								value: object.layout.qMeta.owner ? object.layout.qMeta.owner.userDirectory.concat("/", object.layout.qMeta.owner.userId) : null // Not available on QS Desktop
+								value: "string" === typeof qMeta.owner ? qMeta.owner : (qMeta.owner ? "".concat(qMeta.owner.userDirectory, "/", qMeta.owner.userId) : null) // Not available on QS Desktop
 							},
 							tags: {
 								label: translator.get("Common.Tags"),
-								value: (object.layout.qMeta.tags || [])
+								value: (qMeta.tags || [])
 							}
 						};
 
 						// Add item to the list
 						list.push({
 							id: object.layout.qInfo.qId,
-							label: object.layout.qMeta.title,
+							label: qMeta.title,
 							icon: object.__validation.hasError ? "debug" : "",
 							details: details,
 							layout: object.layout,
@@ -869,12 +870,13 @@ define([
 
 						return dfd.promise;
 					}).then( function( object ) {
+						var qMeta = object.layout.qMeta,
 
 						// Collect master object details
-						var details = {
+						details = {
 							description: {
 								label: translator.get("Common.Description"),
-								value: object.layout.qMeta.description
+								value: qMeta.description
 							},
 							type: {
 								label: "Type", // Translation?
@@ -882,27 +884,27 @@ define([
 							},
 							createdDate: {
 								label: "Created", // Translation?
-								value: object.layout.qMeta.createdDate ? new Date(object.layout.qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.createdDate ? new Date(qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							publishedDate: {
 								label: translator.get("App.PublishedDate").replace(":", ""),
-								value: object.layout.qMeta.published ? new Date(object.layout.qMeta.publishTime).toLocaleString() : translator.get("Common.No")
+								value: qMeta.published ? new Date(qMeta.publishTime).toLocaleString() : translator.get("Common.No")
 							},
 							approved: {
 								label: "Approved", // Translation?
-								value: object.layout.qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
+								value: qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
 							},
 							modifiedDate: {
 								label: "Modified", // Translation?
-								value: object.layout.qMeta.modifiedDate ? new Date(object.layout.qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.modifiedDate ? new Date(qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							owner: {
 								label: "Owner", // translation?
-								value: object.layout.qMeta.owner ? object.layout.qMeta.owner.userDirectory.concat("/", object.layout.qMeta.owner.userId) : null // Not available on QS Desktop
+								value: "string" === typeof qMeta.owner ? qMeta.owner : (qMeta.owner ? "".concat(qMeta.owner.userDirectory, "/", qMeta.owner.userId) : null) // Not available on QS Desktop
 							},
 							tags: {
 								label: translator.get("Common.Tags"),
-								value: (object.layout.qMeta.tags || [])
+								value: (qMeta.tags || [])
 							}
 						};
 
@@ -1099,7 +1101,7 @@ define([
 							});
 						});
 					}).then( function( bookmark ) {
-						var setExpression = [], errors = [], i;
+						var setExpression = [], errors = [], i, details, qBookmark = bookmark.object.layout.qBookmark, qMeta = bookmark.object.layout.qMeta;
 
 						// Get set analysis expressions of the bookmark
 						for (i in bookmark.setExpression) {
@@ -1110,10 +1112,11 @@ define([
 							}
 						}
 
-						var details = {
+						// Collect bookmark details
+						details = {
 							description: {
 								label: translator.get("Common.Description"),
-								value: bookmark.object.layout.qMeta.description
+								value: qMeta.description
 							},
 							setExpression: {
 								label: translator.get("Bookmarks.SetExpression"),
@@ -1129,23 +1132,23 @@ define([
 							},
 							createdDate: {
 								label: "Created", // Translation?
-								value: bookmark.object.layout.qMeta.createdDate ? new Date(bookmark.object.layout.qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.createdDate ? new Date(qMeta.createdDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							publishedDate: {
 								label: translator.get("App.PublishedDate").replace(":", ""),
-								value: bookmark.object.layout.qMeta.published ? new Date(bookmark.object.layout.qMeta.publishTime).toLocaleString() : translator.get("Common.No")
+								value: qMeta.published ? new Date(qMeta.publishTime).toLocaleString() : translator.get("Common.No")
 							},
 							approved: {
 								label: "Approved", // Translation?
-								value: bookmark.object.layout.qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
+								value: qMeta.approved ? translator.get("Common.Yes") : translator.get("Common.No")
 							},
 							modifiedDate: {
 								label: "Modified", // Translation?
-								value: bookmark.object.layout.qMeta.modifiedDate ? new Date(bookmark.object.layout.qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
+								value: qMeta.modifiedDate ? new Date(qMeta.modifiedDate).toLocaleString() : null // Not available on QS Desktop
 							},
 							owner: {
 								label: "Owner", // translation?
-								value: bookmark.object.layout.qMeta.owner ? bookmark.object.layout.qMeta.owner.userDirectory.concat("/", bookmark.object.layout.qMeta.owner.userId) : null // Not available on QS Desktop
+								value: "string" === typeof qMeta.owner ? qMeta.owner : (qMeta.owner ? "".concat(qMeta.owner.userDirectory, "/", qMeta.owner.userId) : null) // Not available on QS Desktop
 							},
 							sheet: {
 								label: translator.get("Common.Sheet"),
@@ -1156,14 +1159,14 @@ define([
 								}) : null
 							},
 							hasPatches: {
-								label: "With patches",
-								value: bookmark.object.layout.qBookmark.qPatches.length ? translator.get("Common.Yes") : null
+								label: "Saved layout",
+								value: qBookmark.qPatches.length ? translator.get("Common.Yes") : null
 							}
 						};
 
 						// Collect errors from missing fields
 						if (options.validate) {
-							errors = _.flatten(bookmark.object.layout.qBookmark.qStateData.filter( function( a ) {
+							errors = _.flatten(qBookmark.qStateData.filter( function( a ) {
 								return !! a.qFieldItems.filter( function( b ) {
 									return "NOT_PRESENT" === b.qDef.qType;
 								}).length;
@@ -1174,7 +1177,7 @@ define([
 									var message = "Expression contains invalid field name `".concat(b.qDef.qName, "`");
 
 									// Consider state when multiple states are active
-									if (bookmark.object.layout.qBookmark.qStateData.length > 1) {
+									if (qBookmark.qStateData.length > 1) {
 										message = message.concat(" in state ", "$" === a.qStateName ? translator.get("AlternateState.DefaultState") : a.qStateName);
 									}
 									
@@ -1186,7 +1189,7 @@ define([
 						// Add object data to list
 						list.push({
 							id: bookmark.object.layout.qInfo.qId,
-							label: bookmark.object.layout.qMeta.title,
+							label: qMeta.title,
 							icon: errors.length ? "debug" : "",
 							details: details,
 							setExpression: bookmark.setExpression,
