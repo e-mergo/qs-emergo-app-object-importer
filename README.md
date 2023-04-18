@@ -1,7 +1,7 @@
 ---
-Qlik Sense Visualization Extension
+Type: Qlik Sense Visualization Extension
 Name: E-mergo App Object Importer
-Version: 1.2.20200918
+Version: 1.3-beta
 QEXT: qs-emergo-app-object-importer.qext
 ---
 
@@ -75,7 +75,18 @@ Importing bookmarks was previously part of earlier versions of this extension. H
 
 ## Changelog
 
-#### 1.2.20200918 - QS Sept 2020
+#### 1.3-beta - QS November 2022
+- Ready for Qlik Cloud.
+- Renamed extension label to improve discoverability in the extensions list.
+- Added import of script sections.
+- Added import (duplication) of existing app objects.
+- Added the updating of existing app objects.
+- Fixed a bug where an app object's layout was imported instead of its properties.
+- Updated layout of the app object modal to improve discoverability of app objects and to provide more object details.
+- Updated docs files.
+- Removed import of bookmarks.
+
+#### 1.2.20200918 - QS September 2022
 - Fixed the layout for smaller extension object sizes.
 
 #### 1.1.20200731
