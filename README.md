@@ -23,7 +23,6 @@ This extension removes the barriers for importing app objects by offering a one-
 - Visualization master items
 - Alternate states
 - Variables
-- Bookmarks
 
 ## Disclaimer
 This extension is created free of charge for Qlik Sense app developers, personal or professional. E-mergo developers aim to maintain the functionality of this extension with each new release of Qlik Sense. However, this product does not ship with any warranty of support. If you require any updates to the extension or would like to request additional features, please inquire for E-mergo's commercial plans for supporting your extension needs at support@e-mergo.nl.
@@ -36,8 +35,11 @@ Below is a detailed description of the available features of this extension.
 ### Select App
 To start importing app objects first select the app origin. The app selector popover enables searching based on app name.
 
-### Import App Objects
-After selecting an app in the popup the importer displays all available app objects that exist in the selected app. App objects are grouped by type, providing detailed information and an *Add* button per object. For each object type an *Add all ...* button is available to instantly import the full set of app objects within that type.
+### Import and Update App Objects
+After selecting an app in the popup the importer displays all available app objects that exist in the selected app. App objects are grouped by type, providing detailed information and an *Import object* button per object. For each object type an *Import all ...* button is available to instantly import the full set of app objects of that type. When individual app objects are selected with their checkboxes, the *Import selected* button will only import those selected items. If a single app object already exists in the app, an *Update object* button is available per object.
+
+#### Script
+Import script sections from the selected app. Selecting a script section name displays the content of the script section. Importing the script section adds the section to the end of the app's script. Note that script sections are only importable from apps for which the current user has edit privileges.
 
 #### Sheets
 Import sheets from the selected app. Selecting a sheet name displays a summary of its contents and a description, when available. Importing the sheet includes all visualizations on the sheet and their registered properties.
@@ -57,13 +59,8 @@ Import alternate states from the selected app. Since no other properties are def
 #### Variables
 Import regular variables from the selected app. Variables created in an app's script can be imported. However, these types of variable will not be imported as script-variables, but only as regular app variables. Selecting a variable name displays the associated definition, descriptio, and tags, when available. Importing the variable includes all displayed properties.
 
-#### Bookmarks
-Import bookmarks from the selected app. Bookmarks created in an app's script can be imported. Selecting a bookmark name displays the associated definition, description, used alternate states and used fields. Importing the bookmark includes all displayed properties.
-
-Because a bookmark is defined based on the active current selections the app importer applies and removes current selections when importing the bookmark, which will affect your selection history. Also, the current sheet on which the extension is used will be set as the original location of the bookmark.
-
-### Duplicate objects
-To prevent creating duplicate app objects on import, the importer marks objects that already exist in the current app as non-importable. This check is based on values for both *Name* and *Definition*. This applies to dimensions, measures and variables. The marked objects are indicated by the `i` symbol. The notification in the top of the importer modal highlights this. Non-importable app objects are also ignored by the *Add all ...* buttons.
+### Duplicating objects
+There is no mechanism in place to prevent creating duplicate app objects. A visual indicator is shown for app objects that already exist in the current app. This check is mostly done based on the object's name or title. As a consequence this means that existing app objects still can be imported, however not alternate states and variables which must have a unique name. Because these app objects are importable, the existing app objects may also be duplicated by the *Import selected* button.
 
 ## FAQ
 
@@ -72,6 +69,9 @@ E-mergo provides paid support through standard support contracts. For other scen
 
 ### Can you add feature X?
 Requests for additional features can be posted in the extension's GitHub repository. Depending on your own code samples and the availability of E-mergo developers your request may be considered and included.
+
+### What about importing bookmarks?
+Importing bookmarks was previously part of earlier versions of this extension. However, since the rewrite of import functions in version 1.3 it was found that no reliable result could be created for importing bookmarks. The wide variety of bookmark properties are currently not easily and correctlly replicated in a different app using the available Qlik Sense API's. Untill a proper way for importing (and updating) bookmarks is found, this functionality is not part of this extension.
 
 ## Changelog
 
