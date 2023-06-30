@@ -1,7 +1,7 @@
 ---
 Type: Qlik Sense Visualization Extension
 Name: E-mergo App Object Importer
-Version: 1.3-beta
+Version: 1.3-beta.2
 QEXT: qs-emergo-app-object-importer.qext
 ---
 
