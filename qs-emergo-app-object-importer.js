@@ -6,6 +6,7 @@
  *
  * @param  {Object} qlik                Qlik's core API
  * @param  {Object} qvangular           Qlik's Angular implementation
+ * @param  {Object} axios               Axios HTTP library
  * @param  {Object} _                   Underscore
  * @param  {Object} $q                  Angular's Q promise library
  * @param  {Object} translator          Qlik's translation API
@@ -24,6 +25,7 @@
 define([
 	"qlik",
 	"qvangular",
+	"axios",
 	"underscore",
 	"ng!$q",
 	"translator",
@@ -37,7 +39,7 @@ define([
 	"text!./style.css",
 	"text!./template.ng.html",
 	"text!./modal.ng.html"
-], function( qlik, qvangular, _, $q, translator, Resize, props, initProps, importers, appInfo, util, uiUtil, css, tmpl, modalTmpl ) {
+], function( qlik, qvangular, axios, _, $q, translator, Resize, props, initProps, importers, appInfo, util, uiUtil, css, tmpl, modalTmpl ) {
 
 	// Add global styles to the page
 	util.registerStyle("qs-emergo-app-object-importer", css);
@@ -695,17 +697,48 @@ define([
 			title: translator.get("QCS.Common.Browser.Filter.ResourceType.Value.app"),
 			get: function( setItems ) {
 				if ("undefined" === typeof appList) {
-					currApp.global.getAppList( function( items ) {
-						appList = items.map( function( a ) {
-							return {
-								value: a.qTitle,
-								label: a.qTitle,
-								id: a.qDocId
-							};
-						});
 
-						setItems(appList);
-					}, { openWithoutData: true });
+					// Qlik Cloud
+					// NB. Listed apps may be locked for the user - same behavior as in Qlik Cloud's app catalog
+					if ($scope.ext.libraryInfo.tenantId) {
+						axios("/api/v1/items?resourceType=app&noActions=true").then( function( resp ) {
+							appList = [];
+
+							function getNext( resp ) {
+								Array.prototype.push.apply(appList, resp.data.map( function( a ) {
+									return {
+										value: a.name,
+										label: a.name,
+										id: a.resourceId
+									};
+								}));
+
+								if (resp.links && resp.links.next && resp.links.next.href) {
+									return axios(resp.links.next.href).then( function( resp ) {
+										return getNext(resp.data);
+									});
+								} else {
+									setItems(appList);
+								}
+							}
+
+							return getNext(resp.data);
+						}).catch(console.error);
+
+					// QS Client Managed or QS Desktop
+					} else {
+						currApp.global.getAppList( function( items ) {
+							appList = items.map( function( a ) {
+								return {
+									value: a.qTitle,
+									label: a.qTitle,
+									id: a.qDocId
+								};
+							});
+
+							setItems(appList);
+						}, { openWithoutData: true });
+					}
 				} else {
 					setItems(appList);
 				}
@@ -796,7 +829,7 @@ define([
 					},
 
 					// Connect with the provided app
-					app = qlik.openApp(appData.id, { openWithoutData: true });
+					app = qlik.openApp(appData.id);
 
 					// Setup scope labels and flags
 					$scope.okLabel = $scope.input.okLabel || translator.get("Common.Done");
