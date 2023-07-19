@@ -73,6 +73,9 @@ Requests for additional features can be posted in the extension's GitHub reposit
 ### What about importing bookmarks?
 Importing bookmarks was previously part of earlier versions of this extension. However, since the rewrite of import functions in version 1.3 it was found that no reliable result could be created for importing bookmarks. The wide variety of bookmark properties are currently not easily and correctlly replicated in a different app using the available Qlik Sense API's. Untill a proper way for importing (and updating) bookmarks is found, this functionality is not part of this extension.
 
+### Why does the extension crash on app selection in Qlik Cloud?
+The available API's in Qlik Cloud do not differentiate between apps with user access and those without user access. The same behavior is seen in the Qlik Cloud Catalog where apps may be listed that the current user has no access to, yet the user can still select and navigate to them. Only then does Qlik Cloud show whether the user has access to the app. To prevent the extension from crashing, only select apps that the user has access to.
+
 ## Changelog
 
 #### 1.3-beta - QS November 2022
