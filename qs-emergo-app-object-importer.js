@@ -633,6 +633,63 @@ define([
 	},
 
 	/**
+	 * Holds the loaded apps
+	 *
+	 * This is loaded once when calling `currApp.global.getAppList()` to
+	 * prevent max listener errors on the related event emitter - or when
+	 * calling the Qlik Cloud's REST API to speed up interactivy.
+	 *
+	 * @type {Array}
+	 */
+	appList = (function( list ) {
+		// Qlik Cloud
+		if (util.isQlikCloud) {
+
+			/**
+			 * Listed apps may be locked for the user. This is the same behavior as in Qlik
+			 * Cloud's app catalog.
+			 *
+			 * @link https://qlik.dev/apis/rest/items
+			 */
+			axios("/api/v1/items?resourceType=app&noActions=true").then( function( resp ) {
+				function getNext( resp ) {
+
+					// Append items to already returned list
+					Array.prototype.push.apply(list, resp.data.map( function( a ) {
+						return {
+							value: a.name,
+							label: a.name,
+							id: a.resourceId
+						};
+					}));
+
+					if (resp.links && resp.links.next && resp.links.next.href) {
+						return axios(resp.links.next.href).then( function( resp ) {
+							return getNext(resp.data);
+						});
+					}
+				}
+
+				return getNext(resp.data);
+			}).catch(console.error);
+
+		// QS Client Managed or QS Desktop
+		} else {
+			currApp.global.getAppList( function( items ) {
+				Array.prototype.push.apply(list, items.map( function( a ) {
+					return {
+						value: a.qTitle,
+						label: a.qTitle,
+						id: a.qDocId
+					};
+				}));
+			}, { openWithoutData: true });
+		}
+
+		return list;
+	})([]),
+
+	/**
 	 * Extension controller function
 	 *
 	 * @param  {Object} $scope Extension scope
@@ -679,16 +736,6 @@ define([
 		modal,
 
 		/**
-		 * Holds the loaded apps
-		 *
-		 * This is loaded once when calling `currApp.global.getAppList()` to
-		 * prevent max listener errors on the related event emitter.
-		 *
-		 * @type {Array}
-		 */
-		appList,
-
-		/**
 		 * Define the app popover
 		 *
 		 * @return {Object} Popover methods
@@ -696,52 +743,19 @@ define([
 		popover = uiUtil.uiSearchableListPopover({
 			title: translator.get("QCS.Common.Browser.Filter.ResourceType.Value.app"),
 			get: function( setItems ) {
-				if ("undefined" === typeof appList) {
 
-					// Qlik Cloud
-					// NB. Listed apps may be locked for the user - same behavior as in Qlik Cloud's app catalog
-					if ($scope.ext.libraryInfo.tenantId) {
-						axios("/api/v1/items?resourceType=app&noActions=true").then( function( resp ) {
-							appList = [];
+				// Wait for appList to be defined
+				var interval = setInterval( function() {
+					if ("undefined" !== typeof appList) {
+						setItems(appList);
+						clearInterval(interval);
 
-							function getNext( resp ) {
-								Array.prototype.push.apply(appList, resp.data.map( function( a ) {
-									return {
-										value: a.name,
-										label: a.name,
-										id: a.resourceId
-									};
-								}));
-
-								if (resp.links && resp.links.next && resp.links.next.href) {
-									return axios(resp.links.next.href).then( function( resp ) {
-										return getNext(resp.data);
-									});
-								} else {
-									setItems(appList);
-								}
-							}
-
-							return getNext(resp.data);
-						}).catch(console.error);
-
-					// QS Client Managed or QS Desktop
-					} else {
-						currApp.global.getAppList( function( items ) {
-							appList = items.map( function( a ) {
-								return {
-									value: a.qTitle,
-									label: a.qTitle,
-									id: a.qDocId
-								};
-							});
-
-							setItems(appList);
-						}, { openWithoutData: true });
+						// Refresh view to show the list, because calling `setItems()` does not
+						// display the list contents - by default it is only displayed after
+						// subsequent user interaction.
+						qvangular.$rootScope.$digest();
 					}
-				} else {
-					setItems(appList);
-				}
+				}, 150);
 			},
 			select: function( item ) {
 				fsm.open(item);
