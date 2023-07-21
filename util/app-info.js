@@ -1,13 +1,14 @@
 /**
  * E-mergo utility functions for getting app info
  *
- * @version 20230707
+ * @version 20230721
  * @author Laurens Offereins <https://github.com/lmoffereins>
  *
  * @param  {Object} qlik                Qlik's core API
  * @param  {Object} _                   Underscore
  * @param  {Object} $q                  Angular's Q promise library
  * @param  {Object} translator          Qlik's translator API
+ * @param  {Object} util                E-mergo utility functions
  * @return {Object}                     Importer API
  */
 define([
@@ -15,8 +16,9 @@ define([
 	"axios",
 	"underscore",
 	"ng!$q",
-	"translator"
-], function( qlik, axios, _, $q, translator ) {
+	"translator",
+	"./util"
+], function( qlik, axios, _, $q, translator, util ) {
 
 	/**
 	 * Holds the current app
@@ -77,50 +79,18 @@ define([
 	},
 
 	/**
-	 * Return whether the app runs in a Qlik Sense Desktop context
-	 *
-	 * Determines context by checking app model attributes:
-	 * - layout.create (not in Qlik Sense Desktop)
-	 *
-	 * @type {Boolean} Is the context Qlik Sense Desktop?
-	 */
-	isQlikSenseDesktop = ! currApp.model.enigmaModel.layout.hasOwnProperty("create"),
-
-	/**
-	 * Wrapper for requests made to Qlik's REST API's
-	 *
-	 * @param  {Object|String} args Request data or url
-	 * @return {Promise} Request response
-	 */
-	request = function( args ) {
-		var globalProps = currApp.global.session.options;
-
-		// When provided just the url
-		if ("string" === typeof args) {
-			args = { url: args };
-		}
-
-		// Prefix QRS calls with the proxy
-		if ((args.applyPrefix || 0 === args.url.indexOf("/qrs")) && globalProps.prefix.length) {
-			args.url = globalProps.prefix.replace(/\/+$/, "").concat(args.url);
-		}
-
-		// Default params
-		args.params = args.params || {};
-		args.headers = args.headers || {};
-
-		/**
-		 * Axios is setup by QS to handle xsrf tokens.
-		 */
-		return axios(args);
-	},
-
-	/**
 	 * Holds the list of extensions
 	 *
 	 * @type {Object}
 	 */
 	extensionList = null,
+
+	/**
+	 * Holds the promise when the list of extensions is loaded
+	 *
+	 * @type {Promise}
+	 */
+	isExtensionListLoaded = $q.defer(),
 
 	/**
 	 * Load QEXT files for extensions
@@ -142,14 +112,19 @@ define([
 			// Load files for existing extensions, only once
 			return extensionList[a] && ! extensionList[a].type;
 		}).map( function( a ) {
+			var qext;
 
 			// Get the path to the QEXT file
-			var qext = extensionList[a].references.find( function( b ) {
-				return ".qext" === b.logicalPath.substr(b.logicalPath.length - 5);
-			});
+			if (extensionList[a].references) {
+				qext = extensionList[a].references.find( function( b ) {
+					return ".qext" === b.logicalPath.substr(b.logicalPath.length - 5);
+				});
+			} else {
+				qext = "/extensions/".concat(extensionList[a].id, "/", extensionList[a].id, ".qext");
+			}
 
 			// Setup file request
-			return request({url: qext.logicalPath, applyPrefix: true, extensionId: a });
+			return util.qlikRequest({ url: qext.logicalPath, applyPrefix: true, extensionId: a }).catch( function() { return { data: {} }; });
 		})).then( function( args ) {
 
 			// Store file data in `extensionList`
@@ -181,32 +156,36 @@ define([
 			extensionList = {};
 
 			// QS Desktop has no Repository, so use the deprecated (!) function
-			if (isQlikSenseDesktop) {
+			if (util.isQlikSenseDesktop) {
 				qlik.getExtensionList( function( list ) {
 					list.forEach( function( a ) {
 						extensionList[a.id] = a.data;
 					});
 
+					// Resolve the extension list load promise
+					isExtensionListLoaded.resolve();
+
 					dfd.resolve(extensionList);
 				});
 
-			// Call the QRS REST API
+			// Call the Cloud REST API or QRS REST API
 			// Note that the initial extension request does not contain all necessary data, like
 			// extension name, author, version, etc. These details need to be fetched directly
 			// from the QEXT file of each extension separately.
 			} else {
-				request({
-					url: "/qrs/extension/full"
-				}).then( function( resp ) {
-					resp.data.forEach( function( a ) {
+				util.qlikRequest({ url: util.isQlikCloud ? "/api/v1/extensions" : "/qrs/extension/full" }).then( function( resp ) {
+					(resp.data.data || resp.data).forEach( function( a ) {
 
-						// In QRS `id` is the repository id, `name` is the extension id. Rename the
-						// keys to align them with results for QS Desktop. Also `name` from the QEXT
+						// In Cloud/QRS `id` is the repository id, `loadpath` or `name` is the extension id.
+						// Rename the keys to align them with results for QS Desktop. Also `name` from the QEXT
 						// is the human readable label.
 						a.uuid = a.id;
-						a.id = a.name;
+						a.id = a.loadpath || a.name;
 						extensionList[a.id] = a;
 					});
+
+					// Resolve the extension list load promise
+					isExtensionListLoaded.resolve();
 
 					// Load QEXT of each extension
 					if (options.extensionIds) {
@@ -216,14 +195,16 @@ define([
 					} else {
 						dfd.resolve(extensionList);
 					}
-				});
+				}).catch(dfd.reject);
 			}
 
 		// Handle requests for additional extensions
-		} else if (! isQlikSenseDesktop && options.extensionIds) {
-			loadExtensionQext(options.extensionIds).then( function() {
+		} else if (! util.isQlikSenseDesktop && options.extensionIds) {
+			isExtensionListLoaded.promise.then( function() {
+				return loadExtensionQext(options.extensionIds);
+			}).then( function() {
 				dfd.resolve(extensionList);
-			});
+			}).catch(dfd.reject);
 		} else {
 			dfd.resolve(extensionList);
 		}
@@ -310,7 +291,22 @@ define([
 									c.__masterobject = d.properties;
 
 									return c;
-								}) || $q.resolve(c)).then( function( d ) {
+								}) || $q.resolve(c)).catch( function() {
+
+									// Fallback when master object was not found
+									if (c.properties.qExtendsId) {
+										c.__masterobject = {
+											qInfo: {
+												qId: c.properties.qExtendsId
+											},
+											qMetaDef: {
+												title: "OBJECT NOT FOUND"
+											}
+										};
+									}
+
+									return c;
+								}).then( function( d ) {
 
 									// Fetch property tree to load list of children on the object.
 									// This is mostly relevant for listboxes on a filterpane.
@@ -399,7 +395,7 @@ define([
 								label: translator.get("geo.properties.wms.status"),
 								value: qMeta.published
 									? translator.get("AppOverview.Content.PublicSheets").concat(" (", new Date(qMeta.publishTime).toLocaleString(), ")")
-									: (qMeta.approved ? translator.get("AppOverview.Content.CommunitySheets") : (! isQlikSenseDesktop ? "Personal" : null))
+									: (qMeta.approved ? translator.get("AppOverview.Content.CommunitySheets") : (! util.isQlikSenseDesktop ? "Personal" : null))
 							},
 							modifiedDate: {
 								label: translator.get("QCS.Common.DataCatalog.Dataset.Property.LastModified"),
@@ -610,7 +606,7 @@ define([
 
 					// Load dimension's layout and properties. Ignore using `app.getObjectProperties()` as
 					// this does not return reliable results for master items in server environments.
-					return app.model.engineApp.getDimension({ qId: a.qInfo.qId }).then( function( b ) {
+					return app.model.enigmaModel.getDimension({ qId: a.qInfo.qId }).then( function( b ) {
 
 						// Layout contains published metadata, properties contain defined settings.
 						// These details will be loaded 'unto' the original object.
@@ -724,7 +720,7 @@ define([
 
 					// Load measure's layout and properties. Ignore using `app.getObjectProperties()` as
 					// this does not return reliable results for master items in server environments.
-					return app.model.engineApp.getMeasure({ qId: a.qInfo.qId }).then( function( b ) {
+					return app.model.enigmaModel.getMeasure({ qId: a.qInfo.qId }).then( function( b ) {
 
 						// Layout contains published metadata, properties contain defined settings
 						return $q.all([ b.getLayout(), b.getProperties() ]).then( function() {
@@ -813,7 +809,7 @@ define([
 	 * Load info for master objects (visualizations)
 	 *
 	 * TODO: find out invalid viz
-	 * qlik.currApp().model.engineApp.getObject({qId:"FWwchY"}).then(function(a){a.Invalidated.bind(function(){console.log("Invalidated", arguments)});return a.getLayout().then(function(){return a.getProperties()}).then(function(){return a.getFullPropertyTree()}).then(function(){console.log(a)})}).catch(console.error)
+	 * app.model.enigmaModel.getObject({qId:"FWwchY"}).then(function(a){a.Invalidated.bind(function(){console.log("Invalidated", arguments)});return a.getLayout().then(function(){return a.getProperties()}).then(function(){return a.getFullPropertyTree()}).then(function(){console.log(a)})}).catch(console.error)
 	 *
 	 * @param {String} appId App identifier
 	 * @param {Object} options Optional. Load options.
@@ -836,13 +832,13 @@ define([
 
 					// Load object's layout and properties. Ignore using `app.getObjectProperties()` as
 					// this does not return reliable results for master items in server environments.
-					return app.model.engineApp.getObject({ qId: a.qInfo.qId }).then( function( b ) {
+					return app.model.enigmaModel.getObject({ qId: a.qInfo.qId }).then( function( b ) {
 
 						// Layout contains published metadata, properties contain defined settings
 						return $q.all([ b.getLayout(), b.getProperties() ]).then( function() {
 
 							// Load metadata for the visualization
-							return getExtensions([b.layout.visualization]);
+							return getExtensions({ extensionIds: [ b.layout.visualization ] });
 
 						}).then( function() {
 
@@ -983,7 +979,7 @@ define([
 
 					// Load object's layout and properties. Ignore using `app.getObjectProperties()`
 					// as this does not return reliable results for variables in server environments.
-					return app.model.engineApp.getVariableById(a.qInfo.qId).then( function( b ) {
+					return app.model.enigmaModel.getVariableById(a.qInfo.qId).then( function( b ) {
 
 						// Layout contains published metadata, properties contain defined settings
 						return $q.all([ b.getLayout(), b.getProperties() ]).then( function() {
@@ -1081,7 +1077,7 @@ define([
 
 					// Load object's layout and properties. Ignore using `app.getObjectProperties()` as
 					// this does not return reliable results for bookmarks in server environments.
-					return app.model.engineApp.getBookmark(a.qInfo.qId).then( function( b ) {
+					return app.model.enigmaModel.getBookmark(a.qInfo.qId).then( function( b ) {
 
 						// Layout contains published metadata, properties contain defined settings
 						return $q.all([ b.getLayout(), b.getProperties() ]).then( function() {
@@ -1093,7 +1089,7 @@ define([
 							a.qData.qBookmark.qStateData.forEach( function( qStateData ) {
 
 								// Get the state's set analysis for the bookmark
-								getSetAnalysis[qStateData.qStateName] = app.model.engineApp.getSetAnalysis(qStateData.qStateName, a.qInfo.qId);
+								getSetAnalysis[qStateData.qStateName] = app.model.enigmaModel.getSetAnalysis(qStateData.qStateName, a.qInfo.qId);
 							});
 
 							return $q.all(getSetAnalysis).then( function( setAnalysis ) {
@@ -1108,10 +1104,10 @@ define([
 
 						// Get set analysis expressions of the bookmark
 						for (i in bookmark.setExpression) {
-							if (bookmark.setExpression.hasOwnProperty(i) && bookmark.setExpression[i].qSetExpression.length) {
+							if (bookmark.setExpression.hasOwnProperty(i) && bookmark.setExpression[i].length) {
 
 								// Setup human readable format
-								setExpression.push(("$" === i ? translator.get("AlternateState.DefaultState") : i).concat(": ", bookmark.setExpression[i].qSetExpression));
+								setExpression.push(("$" === i ? translator.get("AlternateState.DefaultState") : i).concat(": ", bookmark.setExpression[i]));
 							}
 						}
 
