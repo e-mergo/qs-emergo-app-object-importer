@@ -556,7 +556,7 @@ define([
 	 *
 	 * @type {Object}
 	 */
-	globalOpts = currApp.global.session.options,
+	globalOpts = currApp.global.session.options || currApp.global.session.sessionConfig,
 
 	/**
 	 * Holds the app's global baseURI
@@ -566,7 +566,7 @@ define([
 	 *
 	 * @return {String}
 	 */
-	baseURI = (globalOpts.isSecure ? "https://" : "http://").concat(globalOpts.host, globalOpts.port ? ":" : "", globalOpts.port, globalOpts.prefix.replace(/\/+$/g, ""), "/"),
+	baseURI = (globalOpts.isSecure || globalOpts.secure ? "https://" : "http://").concat(globalOpts.host, globalOpts.port ? ":" : "", globalOpts.port, globalOpts.prefix.replace(/\/+$/g, ""), "/"),
 
 	/**
 	 * Return the url for a single sheet
